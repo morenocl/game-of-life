@@ -5,18 +5,26 @@ import pygame
 from time import sleep
 
 
-nn = 35 # numero de celdas
-l = 20  # tamagno de celda
+nn = 35 # number of cel
+maxSizeCel = 20 # max size of cel, en px
+
 gameStatus = np.zeros((nn, nn))
 
-sizeScreen = (nn * l, nn * l)
 liveColor = 250,250,250
 bgColor = 10,10,10
 borderColor = pygame.Color(100,100,100)
 
 pygame.init()
+hwWidth  = pygame.display.Info().current_w
+hwHeigth = pygame.display.Info().current_h
+# sets the width of a cell depending on the amount to be displayed.
+l = int(hwHeigth / nn) if int(hwHeigth / nn) < maxSizeCel else maxSizeCel
+
+# calculates the width of the screen based on the width of each cell.
+screenHeigth = (l * nn) if (l * nn) < hwHeigth else hwHeigth
+# for now it shows only one square of cells. Then it will show information on the right.
+sizeScreen = (screenHeigth, screenHeigth)
 screen = pygame.display.set_mode(sizeScreen)
-pause = False
 
 def getNumberNeighbor(gameStatus):
     # Calcula el numero de vecinos de cada celda, aplicando topologia toroide.
@@ -25,13 +33,14 @@ def getNumberNeighbor(gameStatus):
             gameStatus[(x+1)%nn,(y-1+nn)%nn] +  gameStatus[(x+1)%nn,y]   + gameStatus[(x+1)%nn,(y+1)%nn])
 
 def polygon(x, y):
-    # Cuadrado a partir de coordenadas x, y
+    # Square from coordinates x, y
     return [(    x * l  ,    y * l)   ,\
             (    x * l  , (y + 1) * l),\
             ((x + 1) * l, (y + 1) * l),\
             ((x + 1) * l,    y * l)   ]
 
 running = True
+pause = True
 
 while running:
     newGameStatus = np.copy(gameStatus)
@@ -57,10 +66,10 @@ while running:
 
             if not pause:
                 n_neigh = getNumberNeighbor(gameStatus)
-                # Si esta muerta y tiene tres vecinos revive
+                # if is dead and have three neighbors alive again.
                 if gameStatus[x,y] == 0 and n_neigh == 3:
                     newGameStatus[x,y] = 1
-                # Si esta viva muere por soledad o sobrepoblacion.
+                # if is alive, die for loneliness or overpopulation.
                 elif gameStatus[x,y] == 1 and (n_neigh <2 or n_neigh > 3):
                     newGameStatus[x,y] = 0
 
@@ -73,5 +82,9 @@ while running:
     pygame.display.flip()
     sleep(.1)
 
-print("\nGracias por probar este juego =D\n")
+# print("\nGracias por probar este juego =D\n")
+# print("\nThanks for trying this game =D\n")
+# print("\nMerci d'avoir essayé ce jeu =D\n")
+# print("\nDankon pro provi ĉi tiun ludon =D\n")
+# print("\nDeo gratias, quia hoc ludum conatur =D\n")
 pygame.quit()
